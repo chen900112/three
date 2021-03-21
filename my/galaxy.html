@@ -1,0 +1,100 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>galaxy</title>
+    <link type="text/css" rel="stylesheet" href="../examples/main.css">
+</head>
+<body>
+    <script type="module">
+        import {
+                Group,
+                Shape,
+                Scene,
+                Mesh,
+                DoubleSide,
+                LineSegments,
+                PointLight,
+                SphereGeometry,
+                WireframeGeometry,
+                OrthographicCamera,
+                PerspectiveCamera,
+                MeshLambertMaterial,
+                WebGLRenderer,
+                AxisHelper,
+                LineBasicMaterial,
+                MeshPhongMaterial,
+                Color
+            } from '../build/three.module.js';
+            import { OrbitControls } from '../examples/jsm/controls/OrbitControls.js';
+            const twoPi = Math.PI * 2;
+            const scene = new Scene();
+            scene.background = new Color(0x444444);
+            // const axisHelper = new AxisHelper(250);
+            // scene.add(axisHelper);
+            const group = new Group();
+            const data = {
+                    radius: 15,
+                    widthSegments: 32,
+                    heightSegments: 32,
+                    phiStart: 0,
+                    phiLength: twoPi,
+                    thetaStart: 0,
+                    thetaLength: Math.PI
+                };
+
+           const geometry = new SphereGeometry(
+                data.radius, data.widthSegments, data.heightSegments, data.phiStart, data.phiLength, data.thetaStart, data.thetaLength
+            )
+            const wireframe = new LineBasicMaterial(geometry);
+          
+            const lineMaterial = new LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.5 });
+            const meshMaterial = new MeshPhongMaterial({ color: 0x156289, emissive: 0x072534, side: DoubleSide, flatShading: true });
+
+            group.add(new LineSegments(geometry, lineMaterial));
+            group.add(new Mesh(geometry, meshMaterial));
+            scene.add(group);
+
+            const lights = [];
+                lights[0] = new PointLight(0xffffff, 1, 0);
+                lights[1] = new PointLight(0xffffff, 1, 0);
+                lights[2] = new PointLight(0xffffff, 1, 0);
+
+                lights[0].position.set(0, 200, 0);
+                lights[1].position.set(100, 200, 100);
+                lights[2].position.set(- 100, - 200, - 100);
+
+                scene.add(lights[0]);
+                scene.add(lights[1]);
+                scene.add(lights[2]);
+
+            const point = new PointLight(0xffffff);
+            point.position.set(400, 200, 300);
+            scene.add(point);
+
+            const width = window.innerWidth; //窗口宽度
+            const height = window.innerHeight; //窗口高度
+            const camera = new PerspectiveCamera(75, width / height, 0.1, 50);
+            camera.position.z = 30;
+
+
+            const renderer = new WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(width, height);
+            // renderer.setClearColor(0xb9d3ff, 1);
+            document.body.appendChild(renderer.domElement);
+            renderer.render(scene, camera);
+
+            function render() {
+                renderer.render(scene, camera);
+                group.rotation.x += 0.005;
+                group.rotation.y += 0.005;
+                requestAnimationFrame(render);
+            }
+            render();
+            const orbit = new OrbitControls(camera, renderer.domElement);
+    </script>
+    
+</body>
+</html>
